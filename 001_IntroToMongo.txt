@@ -1,0 +1,63 @@
+Intro to MongoDB - Nosh Petigara
+
+Example Application: Location based service
+
+Queries
+- Can match an array element
+* ex: place={tags: ['foo', 'baz']} => places.find({tags: 'baz'})
+- Can also pass regex
+* find({attr: /regex/})
+- Mix and match various 
+
+Basic CRUD
+- insert
+- update
+* update({find_condition}, {update_conditions})
+- Update operators ($push, $pop, etc - to be covered later)
+
+Location: declare as numeric array, declare in index
+* ensureIndex(attr, '2d')
+* Query with $near keyword
+
+Embedded documents
+- Array of subdocuments
+- Embeds are raw BSON hash
+
+References to documents
+* array of BSON IDs (alternative ways?)
+* Tradeoffs of embed vs. references to be covered in schema design
+
+Atomic updates
+- $set, $unset, $rename, $push, $pop, $pull, etc.
+
+Query options
+- Sort
+- Limit
+- Count
+- Find conditionals ($gt, $lt, etc.)
+
+Map Reduce support
+- Example given: stats
+- Run against a collection
+- Supported by Ruby driver
+
+NOTE: Sorting may be VERY costly without indexing
+INDEX INDEX INDEX (seriously)
+
+Multiple server setup methods
+- Master/Slave
+* Similar to RDBMS setups
+* Replica set, failover to secondary
+* Async replication to secondary servers (SLA on replication?)
+* Good for read-heavy
+
+- Autosharding
+* Per-collection
+* Set up collection / key
+* Mongo handles distribution/balancing via config server
+* MongoS: caching, routing, etc.
+
+
+
+
+
