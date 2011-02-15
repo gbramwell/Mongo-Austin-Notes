@@ -1,0 +1,87 @@
+Indexing and Query Optimizer - Mathias Stearn
+
+Mongo indexing: Btrees
+- Logarithmic search time
+- reasonably efficient disk storage
+
+Indexing Generalities
+- 64 indexes per collection
+- Queries only use one queries (except disjuncts of $or queries)
+* Strategy: use compound indexes for more complex queries
+- More work on insert/update/delete
+
+Declaring index syntax
+- Compound keys: order of ensureIndex is order of index
+* {user: 1, email: 1} indexes user FIRST, email SECOND
+- Arrays: Indexing array indexes all values in list
+* 1 entry for EACH entry in list
+* use case: tags
+- Additional options
+* unique
+* background (create index in background)
+  * Slower
+  * Prevents locking entire database on index (default locks entire collection)
+* (1.8 only) Sparse index
+
+Maintenance
+- dropIndex / Indexes
+- reIndex (cannot background - potentially perform on replica set)
+
+Usage
+- Index on attribute will be used for all queries involving attributes
+* $in, $gt, regex, count, distinct, sort, etc.
+Weird cases
+- Find and sort
+* Will use sort index if find doesn't exist
+* Recommend using compound key
+
+Geospatial indexing
+- Geospatial operations not available without 2D index defined
+- Can also use for generic 2D data (example: Scrabble board)
+
+When indexes can't be used
+- many negations ($ne, $not)
+- Tricky arithmetic ($mod)
+- Most regexes
+- Expressions in $where clauses
+* Suggestion: if result of query is important, precompile answer and store
+- Map/reduce (map function opaque to query optimizer)
+
+Schema design with indexing
+- Be aware of how design will impact indexing
+- Design to take best advantage of indexing
+* example: embedded documents
+* Use multi-key indexing, index attributes inside 
+
+Index sizes and tuning
+- Make sure you have the resources to support your indexes
+* Memory size, etc.
+- Use explain() liberally (pulls stats)
+* nscanned: number of documents scanned
+- Compound indexes are important
+* Pay attention to order of keys
+* Example: find/sort: Find condition comes first
+- SERIOUSLY COMPOUND INDEXES OMG.
+
+DB profiler
+- Mongo will store collection of queries with timing/results counts
+- db.setProfilingLevel(1, 100)
+* Level, slow query threshold
+
+Query optimizer
+- Query optimizer uses empirical data
+* Try few plans, see which ones return fastest
+* Results cached
+- Will change query plans over time
+* Reoptimize as situations change
+* NOTE: Try to keep overlapping indexes to minimum (keeps query planning simple)
+
+Forcing query plan
+- .hint allows for specifying index to use
+- Can specify none
+* .hint($natural: 1)
+
+
+
+
+

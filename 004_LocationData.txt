@@ -1,0 +1,26 @@
+Location Data - Sandeep Parikh
+
+Different types of location data
+
+Different sources too
+- Twitter
+- checking services
+- etc.
+
+Strategy used: Dump, analyze, modify
+
+Mongo native support
+- 2D geospatial indxing
+* Find closest N things
+* Mix in other queries (closest museums)
+- Store as Lat/Lng array (order doesn't matter if consistent)
+
+Query
+- $near / geoNear
+- $within ($box/$circle)
+- No polygons (yet)
+
+
+Takeaway
+- Dumping raw data into Mongo allows for more flexible data mining
+* Over using just API queries to do work
