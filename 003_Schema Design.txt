@@ -1,0 +1,76 @@
+Schema Design - Bernie Hackett
+
+Terminology
+- Join => Embedding / Linking
+
+Object IDs
+- _id object
+- MUST be unique
+- Can define own if desired
+
+Indexing
+- Can set order (1: asc, -1: desc)
+- ensureIndex: will create index if doesn't exist, leave alone otherwise
+
+Diagnostics
+- explain()
+- If cursor is "BasicCursor", you're doing a full table scan
+
+Inserts
+- If field doesn't exist, it will be created
+* Defaults?
+
+Nested Documents
+- Can index nested documents
+* Dot syntax ("comments.author")
+
+If using a field as a common sort, IT SHOULD BE INDEXED
+
+MapReduce note: Returns data directly in 1.6, defaults to storing in a collection in 1.8
+
+Operations
+- Group (equivalent to GROUP BY in SQL)
+
+STI
+- Not all objects need to have all attributes
+- Queries will ignore fields that aren't defined
+- Indices don't need all fields defined either
+* 1.6: treats empty as null
+* 1.8: creates sparse index (ignores nonexistent entries as null)
+
+One-to-many
+- Embedded array / array keys
+* Good for dependent objects
+
+- Embedded tree
+* Single document
+* Natural
+* hard to query
+
+- Normalized to 2 collections
+* Flexible
+* Requires more queries
+* Most similar to RDBMS style relations
+* comments: [{comment: ObjectId('1')}]
+
+
+Many to Many
+- Array of related IDs on each model
+* db.categories.find{product_ids: ObjectId('10')}
+
+- Only store mapping on one model
+* Additional queries needed
+* Keeps the size down
+
+- Store full tree in document
+* Single document with everything
+* HARD to search
+* 1.6: 4MB limit (1.8: 16MB)
+
+Trees
+- Trees as array
+- Tree as path
+* Use regex to parse
+
+Queues
+- Can implement priority queue in Mongo

@@ -1,0 +1,11 @@
+Community Resources - Meghan Gill
+
+- In-browser tutorial
+* try.mongodb.com
+- Docs
+- Drivers
+* Most first-party, some community developed
+- Usergroup: Google Groups (mongodb-user)
+* officially supported / trafficked
+* also other stuff
+So on and so forth.
