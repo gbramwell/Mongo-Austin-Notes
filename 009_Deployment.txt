@@ -1,0 +1,83 @@
+Deployment - Bernie Hackett
+
+Hardware Considerations
+- Memory: Keep working set in memory
+* Uses memory map to put in virtual memory (pagefaults from disk)
+* Indices are part of DB file
+* Consideration: warm start DB
+
+- CPU: Multithreaded, 
+* Aggregation / full table scans are expensive
+* Suggestion: precompute or preaggregate
+* Map Reduce is single-threaded
+
+- I/O
+* More + faster
+* Consider RAID carefully
+* Flash?
+
+Operating System
+- REALLY should use x64 server
+- Mongo only supports little endian (covers most OSes)
+
+Filesystem
+- All storage in same directory
+- Possible to use symlink, should attempt to spread across disks
+- Neutral to filesystem
+* ext4/XFS best for performance (posix_fallocate)
+
+Release Versioning
+- Production: even numbers are stable
+- Development is odd numbers
+- Critical bugs sometimes backported to even versions
+
+Installation
+- Can install from source
+- Binaries easiest
+- Upgrade: install new, stop and start DB
+* 1.6 -> 1.8: Downgrading may make DB read-only
+
+Security
+- No OOB ssl/ssh for talking to other instances
+- Can start with --auth
+- Should set up auth per-database
+- Admin stored in admin, regular in other DBs
+- Can set read-only access for some users
+
+Durability
+- Replica sets
+* 1 primary, 1-6 secondary nodes
+* Secondary nodes have election for new primary on fail
+  * Suggestion: Run mongod as arbiter to break voting deadlocks
+* Can configure write acknowedgement (memory on primary, memory on primary+secondary (W=2), W=n (majority of nodes))
+* Replication performed via oplog (stays compatible between releases)
+  * Recommended: Upgrade slaves first, then master
+- Slave delay
+* 'Whoopsie bucket'
+
+Backup
+- Run from secondary in replica set
+- two tools
+* mongodump / mongorestore
+  * Writes each consistent object
+  * Not consistent from start to finish without fsync lock
+  * --oplog: logs entire process
+  * System does not need to be running to restore
+* Filesystem backup
+  * MUST FSYNC / LOCK DB to perform
+	* db.runCommand({fsync: 1, lock: 1})
+  * Unlock afterward
+    * db.$cmd.sys.unlock.findOne();
+
+
+Maintenance
+- Lots of updates/deletes
+* Recompact: db.repair()
+* Does require downtime to run (roadmap: do wihle live)
+* Replica sets: perform rolling with --repair
+
+
+Monitoring
+
+Ensure profiling and optimization (use explain to optimize indexes)
+

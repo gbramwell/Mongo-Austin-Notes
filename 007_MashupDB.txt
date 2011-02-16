@@ -1,0 +1,8 @@
+MongoDB is the MashupDB - Wynn Netherland
+
+Integration with 3rd party APIs
+- Migrations needed to support new fields when added
+- Not a problem with nosql DBs
+
+MongoDB over other NoSQL stores
+- Contention: feature and scalability set

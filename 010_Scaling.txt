@@ -1,0 +1,113 @@
+Scaling - Eliot Horowitz
+
+Mongo strategy: Horizontal scaling
+* Easier than vertical scaling
+
+Read scaling
+- One master
+* Easy
+* Reads inconsistent, does not scale writes
+
+Sharding
+- Allows for 2d scaling
+- Many masters, even more slaves
+- Shard ramps up write scaling
+- Slaves ramps up inconsistent read scaling; redundancy
+- Can add sharding at any time
+- Can combine sharded / non-sharded collections
+
+Common setup: 3 shards, 3 nodes (1 master 2 slaves), 9 total
+
+Determining shards
+- Shards are range based
+* Min/max/location
+* splits data into chunks
+* Defaults to 64MB or 100,000 objects per chunk
+
+Config servers
+- Must have 3
+- Change made with 2 phase commit
+- Any down, metadata is read-only
+- System online if 1/3 up
+
+Mongos
+- Sharding router
+- Acts like mongod to clients
+- Arbitrary nonzero number
+- Can run on app server (lightweight)
+* Prefer this: mongos is lightweight, allows for local socket IO
+- Caches metadata from config servers
+
+Writes
+- Inserts: REQUIRE shard key, routed
+- Removes: Routed and/or scattered (does not have to include shard key)
+- Updates: Routed or scattered
+
+Queries and Shard Key
+- Automatically indexed
+- Queries with shard key: routed
+- Sort queries by shard key: Routed in order
+- Can still use other indexes (sort by non-shard key)
+* Mongos will send to ALL shards, stream data back to client
+* Transparent to client driver
+- Sorted by non-shard key: distributed mergesort
+
+Splitting Data
+- Takes chunk, split in 2
+- Splits data on median values
+* Data cut roughly in hash
+- Splits only change metadata
+* Shard locations do not change
+
+Balancing
+- Moves chunks between shards
+- Happens online, in background
+* Attempts to eliminate hotspots
+* Still expensive, try to avoid when possible
+- Currently: Balancer doesn't operate until imbalance of 8 chunks
+* Operates until chunk imbalance < 2
+* Attempts to avoid thrashing on systems in question
+* In practice: chunk size 64 MB, small differences on multi-gig systems
+  * Smaller datasets won't see much movement, proportionally larger imbalances
+
+Shard Key Selection
+- Determines where data is stored
+- MOST IMPORTANT performance decision
+- Very hard to change (almost impossible without downtime)
+- Can pick compound keys
+
+Use case: user profiles
+- Shard by email (covers login lookup)
+- Index on addresses
+- Email address: good distribution of keys
+
+Use case: Activity stream ({user_id: event_id: data: })
+- Shard by user_id
+- Looking up activity stream: one node
+- Writing evenly distributed
+- Index event_id for deletes
+
+Use case: photos ({photo_id: ?, data: <binary>})
+- What ID to pick?
+* Auto-increment: BAD (kills range based)
+* md5(data): Write/read distributed, no time breakout of index (must keep ALL in memory)
+* now() + md5: 
+* month() + md5: quick distribution of chunks, easier to select chunk of index for memory
+
+Use case: logging / analytics (machine, app, timestamp, data)
+* machine
+* timestamp
+* machine, app
+* app
+- Answer depends on use case
+* Consider write load (can a minimum mongod size handle write load?)
+* handle common query patterns
+
+
+DEMO: mongodb/mongo-snippets (simple setup Python script)
+- Helper: db.printShardingStatus()
+
+db.changelog - capped collection to show operations on database
+* Useful for debugging
+
+

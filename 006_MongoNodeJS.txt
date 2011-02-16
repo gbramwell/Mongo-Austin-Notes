@@ -1,0 +1,9 @@
+node.s & MongoDB - Travis Swicegood
+
+Evented DB I/O via callback functions
+
+Mongo / node.js - focus on writing nested callbacks to perform async IO
+- Forces error handling along the way
+- Each blocking step handled separately
+* Solution: composed methods (store boilerplate in variable)
+

@@ -1,0 +1,36 @@
+Development Roadmap - Eliot Horowitz
+
+Current stable release: 1.6 (Aug 2010)
+
+Dev: 1.8
+- Single Server Durability
+* Journaling
+* Crash-safe, not HDD death safe
+* Not bulletproof, but better
+- Covered Indexes
+* Sparse indexes
+- Enhancements to Sharding / Replica Sets
+- Map Reduce updates
+
+Release: couple months
+
+Back to 3-month release cycle
+
+Shortlist of Features
+- Better aggregation
+* More SQL type operators
+* Should be able to move most Map Reduce use cases to this
+- Full Text Search
+* Something this year (embedded directly in Mongo)
+- TTL timeout collections
+* Auto-deletion of entries
+- Concurrency
+* Datasets larger than RAM
+* Collection-level locking
+* Multiple writers in same collection
+- Compaction
+* Allow repair / compaction without downtime
+- Corporate improvements
+* LDAP / SNMP / etc.
+
+

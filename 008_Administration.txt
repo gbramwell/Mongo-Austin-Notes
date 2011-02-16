@@ -1,0 +1,40 @@
+Administration - Mathias Stearn
+
+Running
+- Upnack, run from wherever
+- DB store defaults to /data/db, configurable
+* Can use different datastore for different DBs on same machine
+* Use case: SSD for random server, HDD for normal
+
+Mongo Shell
+- Can run commands from Mongo shell
+* runProgram('program', 'args')
+
+Statistics and Utilities
+- db.stats()
+* Stats for entire database, including system DBs
+- db.collection.stats()
+* Stats for a specific collection
+- db.serverStatus()
+* Information about the server itself
+
+Other useful tools
+- mongostat
+- iostat
+* % utilization for disks
+* Determine need for more resources (faster disks, SSD, sharding, etc.)
+- astat
+
+Current status of server: db.currentOp()
+- Info on current operating queries, who started them, etc.
+
+
+Replication
+- Define slave with --master option
+- Can set delays on replication
+* Use case: stop accidental commands from replication
+- Irresponsible to go into prod without it
+
+Other Miscellaneous Bits
+- Make sure that inits scripts shut down cleanly
+* --fork, --logpath
